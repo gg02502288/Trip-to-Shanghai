@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>上海行程 5/28–5/31</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Playfair+Display:ital@0;1&display=swap');
+
+  :root {
+    --bg: #f5f2ee;
+    --surface: #ffffff;
+    --surface2: #f0ece6;
+    --border: rgba(0,0,0,0.09);
+    --border-med: rgba(0,0,0,0.14);
+    --text: #1a1814;
+    --text-muted: #6b6660;
+    --text-dim: #b0aca8;
+    --gold: #8a6a1f;
+    --gold-mid: #b08a2e;
+    --gold-light: #c9a84c;
+    --gold-bg: #fdf6e8;
+    --blue: #1a6fb5;
+    --blue-bg: #e8f2fb;
+    --green: #1e7a4a;
+    --green-bg: #e6f5ee;
+    --amber: #a05c10;
+    --amber-bg: #fef3e4;
+    --red: #b03030;
+    --red-bg: #fdeaea;
+    --purple: #5a3fa0;
+    --purple-bg: #f0ecfb;
+    --done-bg: #f8f7f5;
+    --done-text: #c0bbb6;
+    --done-border: rgba(0,0,0,0.05);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  /* Header */
+  .header {
+    background: #fff;
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .trip-title {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--gold);
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+  }
+  .trip-couple {
+    font-size: 12px;
+    color: var(--gold-mid);
+    margin-top: 2px;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+  }
+  .trip-dates {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 3px;
+    letter-spacing: 0.08em;
+  }
+  .progress-wrap {
+    text-align: right;
+  }
+  .progress-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    margin-bottom: 4px;
+  }
+  .progress-bar {
+    width: 80px;
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-left: auto;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 2px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+  .progress-count {
+    font-size: 10px;
+    color: var(--gold);
+    margin-top: 3px;
+    font-weight: 600;
+  }
+
+  /* Day tabs */
+  .day-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .day-tabs::-webkit-scrollbar { display: none; }
+  .day-tab {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border-med);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-family: 'Noto Sans TC', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  .day-tab.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(138,106,31,0.25);
+  }
+
+  /* Content */
+  .content { padding: 0 16px; }
+
+  /* Day section */
+  .day-section { display: none; padding-top: 20px; }
+  .day-section.active { display: block; }
+
+  .day-hero {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 16px 18px;
+    background: var(--gold-bg);
+    border-radius: 16px;
+    border: 1.5px solid rgba(138,106,31,0.18);
+  }
+  .day-num {
+    font-size: 34px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    min-width: 44px;
+  }
+  .day-info {}
+  .day-label {
+    font-size: 10px;
+    color: var(--gold-mid);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+    font-weight: 600;
+  }
+  .day-theme {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .day-date {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* Stop card */
+  .stop-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: all 0.35s ease;
+    position: relative;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+  }
+  .stop-card.done {
+    background: var(--done-bg);
+    border-color: var(--done-border);
+    opacity: 0.5;
+    box-shadow: none;
+  }
+  .stop-card.done .stop-name,
+  .stop-card.done .stop-time,
+  .stop-card.done .stop-desc,
+  .stop-card.done .tag,
+  .stop-card.done .photo-tip { color: var(--done-text) !important; }
+  .stop-card.done .tag { background: transparent !important; border: 1px solid var(--done-border) !important; }
+  .stop-card.done .map-btns { opacity: 0.25; pointer-events: none; }
+  .stop-card.done .photo-section { opacity: 0.25; }
+
+  .stop-inner {
+    padding: 14px 14px 18px;
+  }
+  .stop-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .stop-left { flex: 1; min-width: 0; }
+  .stop-time {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .stop-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 5px;
+  }
+  .stop-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin-bottom: 8px;
+  }
+  .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+  .tag {
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: 10px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .tag-sight  { background: var(--green-bg);  color: var(--green); }
+  .tag-food   { background: var(--amber-bg);  color: var(--amber); }
+  .tag-hotel  { background: var(--blue-bg);   color: var(--blue); }
+  .tag-transit{ background: var(--surface2);  color: var(--text-muted); }
+  .tag-shop   { background: var(--purple-bg); color: var(--purple); }
+  .tag-rest   { background: var(--red-bg);    color: var(--red); }
+  .tag-exp    { background: var(--gold-bg);   color: var(--gold); }
+
+  /* Map buttons */
+  .map-btns {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .map-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 13px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s;
+    border: none;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+  .map-btn-google {
+    background: var(--blue-bg);
+    color: var(--blue);
+    border: 1.5px solid rgba(26,111,181,0.2);
+  }
+  .map-btn-google:active { background: #d0e6f8; }
+  .map-btn-amap {
+    background: var(--green-bg);
+    color: var(--green);
+    border: 1.5px solid rgba(30,122,74,0.2);
+  }
+  .map-btn-amap:active { background: #cceedd; }
+  .map-icon { font-size: 13px; }
+
+  /* Photo tip section */
+  .photo-section {
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+    margin-top: 4px;
+  }
+  .photo-label {
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .photo-tip {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin-bottom: 8px;
+  }
+  .photo-tip strong { color: var(--text); }
+  .photo-img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+    background: var(--surface2);
+  }
+  .photo-imgs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .photo-imgs .photo-img { height: 90px; }
+
+  /* Check button */
+  .check-btn-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    margin-top: 0;
+  }
+  .check-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    border: 2px solid var(--gold-light);
+    background: var(--gold-bg);
+    color: var(--gold);
+    font-size: 22px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(138,106,31,0.12);
+  }
+  .check-btn .btn-icon {
+    font-size: 20px;
+    line-height: 1;
+  }
+  .check-btn .btn-label {
+    font-size: 9px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .check-btn:active { transform: scale(0.88); }
+  .stop-card.done .check-btn {
+    background: var(--green-bg);
+    border: 2px solid var(--green);
+    color: var(--green);
+    box-shadow: 0 2px 8px rgba(30,122,74,0.18);
+  }
+  .stop-card.done .check-btn .btn-label {
+    color: var(--green);
+  }
+
+  /* Connector line */
+  .connector {
+    width: 1.5px;
+    height: 10px;
+    background: var(--border-med);
+    margin: 0 auto 0 27px;
+  }
+
+  /* Photo toggle */
+  .photo-toggle {
+    background: none;
+    border: none;
+    color: var(--gold);
+    font-size: 11px;
+    font-family: 'Noto Sans TC', sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 0;
+    margin-bottom: 2px;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+  .photo-toggle-content { overflow: hidden; transition: max-height 0.3s ease; }
+  .photo-toggle-content.collapsed { max-height: 0; }
+  .photo-toggle-content.expanded { max-height: 600px; }
+
+  /* Photo spot map buttons */
+  .photo-map-btns {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  .photo-map-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+  .photo-map-btn-google {
+    background: var(--blue-bg);
+    color: var(--blue);
+    border: 1px solid rgba(26,111,181,0.18);
+  }
+  .photo-map-btn-google:active { background: #d0e6f8; }
+  .photo-map-btn-amap {
+    background: var(--green-bg);
+    color: var(--green);
+    border: 1px solid rgba(30,122,74,0.18);
+  }
+  .photo-map-btn-amap:active { background: #cceedd; }
+
+  /* Meal highlight */
+  .meal-banner {
+    background: var(--gold-bg);
+    border-top: 1px solid rgba(138,106,31,0.15);
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  /* Floating back to top */
+  .fab {
+    position: fixed;
+    bottom: 24px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: #fff;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(138,106,31,0.35);
+    z-index: 200;
+    transition: transform 0.15s;
+  }
+  .fab:active { transform: scale(0.9); }
+
+  /* ===================== RWD ===================== */
+
+  /* Tablet 768px+ */
+  @media (min-width: 768px) {
+    body { padding-bottom: 60px; }
+
+    .header { padding: 22px 40px 18px; }
+    .trip-title { font-size: 26px; }
+    .trip-couple { font-size: 13px; }
+    .trip-dates { font-size: 12px; }
+    .progress-bar { width: 110px; }
+    .progress-label { font-size: 11px; }
+    .progress-count { font-size: 11px; }
+
+    .day-tab { font-size: 12px; padding: 7px 18px; }
+
+    .content { padding: 0 40px; }
+
+    .day-hero { padding: 20px 24px; margin-bottom: 24px; }
+    .day-num { font-size: 40px; min-width: 52px; }
+    .day-theme { font-size: 17px; }
+
+    .stop-inner { padding: 18px 20px 20px; }
+    .stop-name { font-size: 16px; }
+    .stop-desc { font-size: 13px; }
+    .stop-time { font-size: 12px; }
+    .tag { font-size: 11px; padding: 4px 10px; }
+
+    .map-btn { font-size: 12px; padding: 8px 14px; }
+    .photo-map-btn { font-size: 11px; padding: 6px 12px; }
+    .photo-tip { font-size: 12px; }
+    .photo-img { height: 170px; }
+    .photo-imgs .photo-img { height: 120px; }
+
+    .check-btn { width: 62px; height: 62px; border-radius: 16px; }
+    .check-btn .btn-icon { font-size: 24px; }
+    .check-btn .btn-label { font-size: 10px; }
+
+    .meal-banner { font-size: 12px; padding: 9px 18px; }
+    .photo-toggle { font-size: 12px; }
+    .fab { width: 50px; height: 50px; font-size: 22px; bottom: 32px; right: 32px; }
+  }
+
+  /* Desktop 1024px+ - centered max-width, larger type */
+  @media (min-width: 1024px) {
+    body { background: #ece8e2; padding-bottom: 80px; }
+
+    .header {
+      padding: 0;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    }
+    .header-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px 32px 16px;
+    }
+
+    .trip-title { font-size: 28px; }
+    .trip-couple { font-size: 14px; }
+    .day-tab { font-size: 13px; padding: 8px 22px; }
+    .progress-bar { width: 140px; }
+    .progress-label { font-size: 12px; }
+    .progress-count { font-size: 12px; font-weight: 700; }
+
+    .content {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    .day-section { padding-top: 28px; }
+    .day-hero { padding: 22px 28px; margin-bottom: 20px; border-radius: 20px; }
+    .day-num { font-size: 44px; min-width: 56px; }
+    .day-theme { font-size: 18px; }
+    .day-date { font-size: 12px; }
+
+    .stop-card { border-radius: 18px; margin-bottom: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+    .stop-inner { padding: 20px 22px 22px; }
+    .stop-name { font-size: 17px; }
+    .stop-desc { font-size: 14px; line-height: 1.7; }
+    .stop-time { font-size: 12px; margin-bottom: 4px; }
+    .tag { font-size: 11px; padding: 4px 11px; }
+
+    .map-btns { gap: 8px; margin-bottom: 12px; }
+    .map-btn { font-size: 13px; padding: 9px 16px; border-radius: 11px; }
+    .photo-map-btn { font-size: 11px; padding: 6px 13px; }
+    .photo-tip { font-size: 13px; line-height: 1.7; margin-bottom: 10px; }
+    .photo-img { height: 200px; }
+    .photo-imgs .photo-img { height: 140px; }
+    .photo-toggle { font-size: 13px; padding: 5px 0; }
+    .photo-section { padding-top: 12px; }
+
+    .check-btn { width: 68px; height: 68px; border-radius: 16px; }
+    .check-btn .btn-icon { font-size: 26px; }
+    .check-btn .btn-label { font-size: 11px; }
+    .stop-header { gap: 14px; }
+
+    .meal-banner { font-size: 13px; padding: 10px 20px; }
+    .connector { height: 12px; margin-left: 32px; }
+
+    .fab { width: 52px; height: 52px; font-size: 22px; bottom: 36px; right: 36px; }
+  }
+
+  /* Wide 1280px+ */
+  @media (min-width: 1280px) {
+    .header-inner { max-width: 900px; }
+    .content { max-width: 900px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+  <div class="header-top">
+    <div>
+      <div class="trip-title">Shanghai ✦ 上海</div>
+      <div class="trip-couple">昱翔 &amp; 瀞文 之旅</div>
+      <div class="trip-dates">5月28日 — 5月31日 · 4天3夜</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label">完成進度</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-count" id="progressCount">0 / 0</div>
+    </div>
+  </div>
+  <div class="day-tabs">
+    <button class="day-tab active" onclick="switchDay(0)">Day 1 · 5/28</button>
+    <button class="day-tab" onclick="switchDay(1)">Day 2 · 5/29</button>
+    <button class="day-tab" onclick="switchDay(2)">Day 3 · 5/30</button>
+    <button class="day-tab" onclick="switchDay(3)">Day 4 · 5/31</button>
+  </div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ===== DAY 1 ===== -->
+<div class="day-section active" id="day-0">
+  <div class="day-hero">
+    <div class="day-num">01</div>
+    <div class="day-info">
+      <div class="day-label">Day 1</div>
+      <div class="day-theme">抵達上海 · 外灘初見</div>
+      <div class="day-date">5月28日（三）</div>
+    </div>
+  </div>
+
+  <div class="stops-grid">
+  <!-- Stop: 浦東機場 -->
+  <div class="stop-card" id="s0">
+    <div class="stop-inner">
+      <div class="stop-header">
+        <div class="stop-left">
+          <div class="stop-time">19:05</div>
+          <div class="stop-name">✈ 抵達浦東機場 T2</div>
+          <div class="stop-desc">過關、提領行李，搭地鐵 2 號線（或磁浮接地鐵）前往市區，約 50–60 分鐘。</div>
+          <div class="tags"><span class="tag tag-transit">交通</span></div>
+          <div class="map-btns">
+            <a class="map-btn map-btn-google" href="https://maps.google.com/?q=上海浦東國際機場T2" target="_blank"><span class="map-icon">🗺</span>Google Map</a>
+            <a class="map-btn map-btn-amap" href="https://uri.amap.com/search?keyword=上海浦东国际机场T2&src=myapp" target="_blank"><span class="map-icon">📍</span>高德地圖</a>
+          </div>
+        </div>
+        <div class="check-btn-wrap"><button class="check-btn" onclick="toggleDone('s0')"><span class="btn-icon">☐</span><span class="btn-label">打卡</span></button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"></div>
+
+  <!-- Stop: 飯店 -->
+  <div class="stop-card" id="s1">
+    <div class="stop-inner">
+      <div class="stop-header">
+        <div class="stop-left">
+          <div class="stop-time">21:00</div>
+          <div class="stop-name">🏨 遇站八號藝術飯店 Check-in</div>
+          <div class="stop-desc">延安東路，外灘步行幾分鐘可達。飯店附早餐，翌日 7:30 開始。</div>
+          <div class="tags"><span class="tag tag-hotel">住宿</span><span class="tag tag-food">含早餐 7:30</span></div>
+          <div class="map-btns">
+            <a class="map-btn map-btn-google" href="https://maps.google.com/?q=The+Eight+Art+Hotel+on+the+Bund+Shanghai" target="_blank"><span class="map-icon">🗺</span>Google Map</a>
+            <a class="map-btn map-btn-amap" href="https://uri.amap.com/search?keyword=遇站八号艺术酒店&city=上海&src=myapp" target="_blank"><span class="map-icon">📍</span>高德地圖</a>
+          </div>
+        </div>
+        <div class="check-btn-wrap"><button class="check-btn" onclick="toggleDone('s1')"><span class="btn-icon">☐</span><span class="btn-label">打卡</span></button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"></div>
+
+  <!-- Stop: 外灘夜景 -->
+  <div class="stop-card" id="s2">
+    <div class="stop-inner">
+      <div class="stop-header">
+        <div class="stop-left">
+          <div class="stop-time">21:30</div>
+          <div class="stop-name">🌃 外灘夜景漫步</div>
+          <div class="stop-desc">浦東陸家嘴燈光秀與黃浦江倒影，上海最美的第一印象。19:00 後燈全亮，藍調時刻 18:30–20:00 最適合拍照。</div>
+          <div class="tags"><span class="tag tag-sight">景點</span></div>
+          <div class="map-btns">
+            <a class="map-btn map-btn-google" href="https://maps.google.com/?q=外灘+上海" target="_blank"><span class="map-icon">🗺</span>Google Map</a>
+            <a class="map-btn map-btn-amap" href="https://uri.amap.com/search?keyword=外滩&city=上海&src=myapp" target="_blank"><span class="map-icon">📍</span>高德地圖</a>
+          </div>
+        </div>
+        <div class="check-btn-wrap"><button class="check-btn" onclick="toggleDone('s2')"><span class="btn-icon">☐</span><span class="btn-label">打卡</span></button></div>
+      </div>
+    </div>
+    <div class="meal-banner">📸 推薦拍攝點</div>
+    <div class="stop-inner" style="padding-top:0">
+      <button class="photo-toggle" onclick="togglePhoto('p2')">📷 查看拍攝建議 ▾</button>
+      <div class="photo-toggle-content collapsed" id="p2">
+        <div class="photo-section">
+          <div class="photo-tip">① <strong>外灘觀景臺正面</strong>：對準浦東東方明珠＋三件套，黃金機位在中山東一路濱江步道中段<br>② <strong>外白渡橋方向</strong>：往北走到蘇州河口，回望外灘萬國建築群長鏡頭<br>③ <strong>最佳時機</strong>：夏季 19:00 燈亮，藍調天空約 19:00–19:30，完全黑天後倒影最美</div>
+          <div class="photo-map-btns">
+            <a class="photo-map-btn photo-map-btn-google" href="https://maps.google.com/?q=上海外灘濱江步道" target="_blank">🗺 外灘濱江步道</a>
+            <a class="photo-map-btn photo-map-btn-amap" href="https://uri.amap.com/search?keyword=外滩滨江大道&city=上海&src=myapp" target="_blank">📍 高德地圖</a>
+          </div>
+          <img class="photo-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Shanghai_Bund_night_view.jpg/1280px-Shanghai_Bund_night_view.jpg" alt="外灘夜景" onerror="this.style.display='none'">
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- ===== DAY 2 ===== -->
+<div class="day-section" id="day-1">
+  <div class="day-hero">
+    <div class="day-num">02</div>
+    <div class="day-info">
+      <div class="day-label">Day 2</div>
+      <div class="day-theme">朱家角 · 晟永興 · 豫園 → 入住瑞金洲際</div>
+      <div class="day-date">5月29日（四）</div>
+    </div>
+  </div>
+
+  <div class="stops-grid">
+  <!-- 朱家角 -->
+  <div class="stop-card" id="s3">
+    <div class="stop-inner">
+      <div class="stop-header">
+        <div class="stop-left">
+          <div class="stop-time">07:30 早餐 → 08:30 出發</div>
+          <div class="stop-name">🏘 朱家角古鎮</div>
+          <div class="stop-desc">地鐵 17 號線至朱家角站，步行約 10 分鐘入鎮。北大街、放生橋、課植園。</div>
+          <div class="tags"><span class="tag tag-sight">景點</span><span class="tag tag-exp">搖櫓船 ~80元</span></div>
+          <div class="map-btns">
+            <a class="map-btn map-btn-google" href="https://maps.google.com/?q=朱家角古鎮+上海" target="_blank"><span class="map-icon">🗺</span>Google Map</a>
+            <a class="map-btn map-btn-amap" href="https://uri.amap.com/search?keyword=朱家角古镇&city=上海&src=myapp" target="_blank"><span class="map-icon">📍</span>高德地圖</a>
+          </div>
+        </div>
+        <div class="check-btn-wrap"><button class="check-btn" onclick="toggleDone('s3')"><span class="btn-icon">☐</span><span class="btn-label">打卡</span></button></div>
+      </div>
+    </div>
+    <div class="meal-banner">📸 推薦拍攝點</div>
+    <div class="stop-inner" style="padding-top:0">
+      <button class="photo-toggle" onclick="togglePhoto('p3')">📷 查看拍攝建議 ▾</button>
+      <div class="photo-toggle-content collapsed" id="p3">
+        <div class="photo-section">
+          <div class="photo-tip">① <strong>放生橋</strong>：全鎮最大五孔石拱橋，在橋上俯拍河道＋兩岸民居，是古鎮經典構圖<br>② <strong>北大街水邊</strong>：沿河石板道拍搖櫓船經過瞬間，逆光午前最美<br>③ <strong>課植園門口</strong>：青磚灰瓦古典建築，垂直拍大門效果極佳</div>
+          <div class="photo-map-btns">
+            <a class="photo-map-btn photo-map-btn-google" href="https://maps.google.com/?q=朱家角放生橋" target="_blank">🗺 放生橋</a>
+            <a class="photo-map-btn photo-map-btn-amap" href="https://uri.amap.com/search?keyword=朱家角放生桥&city=上海&src=myapp" target="_blank">📍 高德地圖</a>
+            <a class="photo-map-btn photo-map-btn-google" href="https://maps.google.com/?q=朱家角北大街" target="_blank">🗺 北大街水邊</a>
+          </div>
+          <div class="photo-imgs">
+            <img class="photo-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Fangsheng_Bridge_Zhujiajiao.jpg/800px-Fangsheng_Bridge_Zhujiajiao.jpg" alt="放生橋" onerror="this.style.display='none'">
+            <img class="photo-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Zhujiajiao_Water_Town.jpg/800px-Zhujiajiao_Water_Town.jpg" alt="朱家角水道" onerror="this.style.display='none'">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"></div>
+
+  <!-- 返市區取行李 -->
+  <div class="stop-card" id="s3b">
+    <div class="stop-inner">
+      <div class="stop-header">
+        <div class="stop-left">
+          <div class="stop-time">14:00</div>
+          <div class="stop-name">🧳 返市區 · 遇站八號取行李 → 瑞金洲際 Check-in</div>
+          <div class="stop-desc">地鐵 17 號線返市區，回遇站八號取行李後搭地鐵直達嘉善路站，步行約 5 分鐘即到瑞金洲際 check-in，放好行李輕裝出發。</div>
+          <div class="tags"><span class="tag tag-transit">交通</span><span class="tag tag-hotel">住宿</span></div>
+          <div class="map-btns">
+            <a class="map-btn map-btn-google" href="https://maps.google.com/?q=InterContinental+Shanghai+Ruijin" target="_blank"><span class="map-icon">🗺</span>Google Map</a>
+            <a class="map-btn map-btn-amap" href="https://uri.amap.com/search?keyword=上海瑞金洲际酒店&city=上海&src=myapp" target="_blank"><span class="map-icon">📍</span>高德地圖</a>
+          </div>
+        </div>
+        <div class="check-btn-wrap"><button class="check-btn" onclick="toggleDone('s3b')"><span class="btn-icon">☐</span><span class="btn-label">打卡</span></button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"></div>
+
+  <!-- 晟永興 -->
+  <div class="stop-card" id="s5">
+    <div class="stop-inner">
+      <div class="stop-header">
+        <div class="stop-left">
+          <div class="stop-time">16:00</div>
+          <div class="stop-name">🦀 晟永興外灘店 · 晚餐</div>
+          <div class="stop-desc">從瑞金洲際搭地鐵約 15 分鐘至外灘。四川中路本幫河鮮，招牌蟹粉豆腐、清蒸魚，⚠️ 請提前訂位。用餐後步行至豫園（約 15 分鐘）。</div>
+          <div class="tags"><span class="tag tag-rest">🌟 指定餐廳</span><span class="tag tag-food">晚餐</span></div>
+          <div class="map-btns">
+            <a class="map-btn map-btn-google" href="https://maps.google.com/?q=晟永兴外滩店+上海" target="_blank"><span class="map-icon">🗺</span>Google Map</a>
+            <a class="map-btn map-btn-amap" href="https://uri.amap.com/search?keyword=晟永兴外滩店&city=上海&src=myapp" target="_blank"><span class="map-icon">📍</span>高德地圖</a>
+          </div>
+        </div>
+        <div class="check-btn-wrap"><button class="check-btn" onclick="toggleDone('s5')"><span class="btn-icon">☐</span><span class="btn-label">打卡</span></button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"></div>
+
+  <!-- 豫園 -->
+  <div class="stop-card" id="s4">
+    <div class="stop-inner">
+      <div class="stop-header">
+        <div class="stop-left">
+          <div class="stop-time">17:30</div>
+          <div class="stop-name">🪷 豫園 + 城隍廟</div>
+          <div class="stop-desc">明代私家園林，九曲橋、湖心亭、荷花池。傍晚燈籠亮起最美，城隍廟廟會氛圍十足，逛約 1.5 小時後搭地鐵約 15 分鐘回瑞金洲際。</div>
+          <div class="tags"><span class="tag tag-sight">景點</span></div>
+          <div class="map-btns">
+            <a class="map-btn map-btn-google" href="https://maps.google.com/?q=豫園+上海" target="_blank"><span class="map-icon">🗺</span>Google Map</a>
+            <a class="map-btn map-btn-amap" href="https://uri.amap.com/search?keyword=豫园&city=上海&src=myapp" target="_blank"><span class="map-icon">📍</span>高德地圖</a>
+          </div>
+        </div>
+        <div class="check-btn-wrap"><button class="check-btn" onclick="toggleDone('s4')"><span class="btn-icon">☐</span><span class="btn-label">打卡</span></button></div>
+      </div>
+    </div>
+    <div class="meal-banner">📸 推薦拍攝點</div>
+    <div class="stop-inner" style="padding-top:0">
+      <button class="photo-toggle" onclick="togglePhoto('p4')">📷 查看拍攝建議 ▾</button>
+      <div class="photo-toggle-content collapsed" id="p4">
+        <div class="photo-section">
+          <div class="photo-tip">① <strong>九曲橋 + 湖心亭</strong>：從橋上拍湖心亭倒影，傍晚燈籠點亮後氛圍絕佳<br>② <strong>荷花池</strong>：夏季（5月底）荷花盛開，廣角拍池面效果夢幻<br>③ <strong>城隍廟牌坊</strong>：入夜後紅燈籠亮起，復古感十足的打卡拍攝</div>
+          <div class="photo-map-btns">
+            <a class="photo-map-btn photo-map-btn-google" href="https://maps.google.com/?q=豫園九曲橋+上海" target="_blank">🗺 九曲橋</a>
+            <a class="photo-map-btn photo-map-btn-amap" href="https://uri.amap.com/search?keyword=豫园九曲桥&city=上海&src=myapp" target="_blank">📍 高德地圖</a>
+            <a class="photo-map-btn photo-map-btn-google" href="https://maps.google.com/?q=上海城隍廟牌坊" target="_blank">🗺 城隍廟牌坊</a>
+          </div>
+          <img class="photo-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Shanghai_Yuyuan_Garden_Zigzag_Bridge.jpg/1280px-Shanghai_Yuyuan_Garden_Zigzag_Bridge.jpg" alt="豫園九曲橋" onerror="this.style.display='none'">
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- ===== DAY 3 ===== -->
+<div class="day-section" id="day-2">
+  <div class="day-hero">
+    <div class="day-num">03</div>
+    <div class="day-info">
+      <div class="day-label">Day 3</div>
+      <div class="day-theme">大壺春 · 武康路 · 朵雲夜景 · 新天地晚餐</div>
+      <div class="day-date">5月30日（五）</div>
+    </div>
+  </div>
+
+  <div class="stops-grid">
+  <!-- 大壺春 -->
+  <div class="stop-card" id="s6">
+    <div class="stop-inner">
+      <div class="stop-header">
+        <div class="stop-left">
+          <div class="stop-time">08:30</div>
+          <div class="stop-name">🥟 大壺春 · 早餐</div>
+          <div class="stop-desc">從瑞金洲際步行約 10 分鐘即達！上海生煎包百年老字號，鍋底金黃酥脆、湯汁飽滿，現場排隊現吃！</div>
+          <div class="tags"><span class="tag tag-rest">🌟 指定餐廳</span><span class="tag tag-food">早餐</span></div>
+          <div class="map-btns">
+            <a class="map-btn map-btn-google" href="https://maps.google.com/?q=大壺春+上海" target="_blank"><span class="map-icon">🗺</span>Google Map</a>
+            <a class="map-btn map-btn-amap" href="https://uri.amap.com/search?keyword=大壶春&city=上海&src=myapp" target="_blank"><span class="map-icon">📍</span>高德地圖</a>
+          </div>
+        </div>
+        <div class="check-btn-wrap"><button class="check-btn" onclick="toggleDone('s6')"><span class="btn-icon">☐</span><span class="btn-label">打卡</span></button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"></div>
+
+  <!-- 武康路 -->
+  <div class="stop-card" id="s7">
+    <div class="stop-inner">
+      <div class="stop-header">
+        <div class="stop-left">
+          <div class="stop-time">10:00 — 13:00</div>
+          <div class="stop-name">🌳 武康路周邊 · 深度逛店</div>
+          <div class="stop-desc">從瑞金洲際步行約 15 分鐘直達！法租界梧桐道，武康大樓打卡後延伸安福路、復興西路。精品咖啡館、設計選物店、本地品牌，充裕 2–3 小時盡情探索，午餐就在附近解決。</div>
+          <div class="tags"><span class="tag tag-sight">景點</span><span class="tag tag-shop">逛店</span><span class="tag tag-food">午餐</span></div>
+          <div class="map-btns">
+            <a class="map-btn map-btn-google" href="https://maps.google.com/?q=武康大樓+上海" target="_blank"><span class="map-icon">🗺</span>Google Map</a>
+            <a class="map-btn map-btn-amap" href="https://uri.amap.com/search?keyword=武康大楼&city=上海&src=myapp" target="_blank"><span class="map-icon">📍</span>高德地圖</a>
+          </div>
+        </div>
+        <div class="check-btn-wrap"><button class="check-btn" onclick="toggleDone('s7')"><span class="btn-icon">☐</span><span class="btn-label">打卡</span></button></div>
+      </div>
+    </div>
+    <div class="meal-banner">📸 推薦拍攝點</div>
+    <div class="stop-inner" style="padding-top:0">
+      <button class="photo-toggle" onclick="togglePhoto('p7')">📷 查看拍攝建議 ▾</button>
+      <div class="photo-toggle-content collapsed" id="p7">
+        <div class="photo-section">
+          <div class="photo-tip">① <strong>武康大樓最佳機位</strong>：淮海中路 × 武康路路口，退到斑馬線對面仰拍扇形大樓，是全上海最多人拍的角度<br>② <strong>安福路梧桐道</strong>：走在樹蔭下，鏡頭往前拍，陽光透過葉縫漏光效果極美<br>③ <strong>復興西路老洋房</strong>：各個巷弄轉角都有驚喜，找有爬牆虎的白牆拍人像</div>
+          <div class="photo-map-btns">
+            <a class="photo-map-btn photo-map-btn-google" href="https://maps.google.com/?q=武康大樓+上海+淮海中路" target="_blank">🗺 武康大樓最佳機位</a>
+            <a class="photo-map-btn photo-map-btn-amap" href="https://uri.amap.com/search?keyword=武康大楼&city=上海&src=myapp" target="_blank">📍 高德地圖</a>
+            <a class="photo-map-btn photo-map-btn-google" href="https://maps.google.com/?q=安福路+上海+徐匯" target="_blank">🗺 安福路梧桐道</a>
+          </div>
+          <img class="photo-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Wukang_Building_Shanghai.jpg/800px-Wukang_Building_Shanghai.jpg" alt="武康大樓" onerror="this.style.display='none'">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"></div>
+
+  <!-- 佳家湯包 -->
+  <div class="stop-card" id="s8">
+    <div class="stop-inner">
+      <div class="stop-header">
+        <div class="stop-left">
+          <div class="stop-time">14:00</div>
+          <div class="stop-name">🥟 佳家湯包 · 下午點心</div>
+          <div class="stop-desc">從武康路搭地鐵約 10 分鐘至人民廣場附近。蟹粉小籠包湯汁飽滿，份量適中當點心，午餐後留點胃。</div>
+          <div class="tags"><span class="tag tag-rest">🌟 指定餐廳</span><span class="tag tag-food">點心</span></div>
+          <div class="map-btns">
+            <a class="map-btn map-btn-google" href="https://maps.google.com/?q=佳家湯包+上海" target="_blank"><span class="map-icon">🗺</span>Google Map</a>
+            <a class="map-btn map-btn-amap" href="https://uri.amap.com/search?keyword=佳家汤包&city=上海&src=myapp" target="_blank"><span class="map-icon">📍</span>高德地圖</a>
+          </div>
+        </div>
+        <div class="check-btn-wrap"><button class="check-btn" onclick="toggleDone('s8')"><span class="btn-icon">☐</span><span class="btn-label">打卡</span></button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"></div>
+
+  <!-- 東方明珠拍照 -->
+  <div class="stop-card" id="s9">
+    <div class="stop-inner">
+      <div class="stop-header">
+        <div class="stop-left">
+          <div class="stop-time">15:30</div>
+          <div class="stop-name">📸 東方明珠外觀拍照</div>
+          <div class="stop-desc">搭地鐵至陸家嘴，在廣場及黃浦江邊拍攝東方明珠與三件套天際線。無需購票，日落前光線最美。</div>
+          <div class="tags"><span class="tag tag-sight">景點</span></div>
+          <div class="map-btns">
+            <a class="map-btn map-btn-google" href="https://maps.google.com/?q=東方明珠+上海" target="_blank"><span class="map-icon">🗺</span>Google Map</a>
+            <a class="map-btn map-btn-amap" href="https://uri.amap.com/search?keyword=东方明珠&city=上海&src=myapp" target="_blank"><span class="map-icon">📍</span>高德地圖</a>
+          </div>
+        </div>
+        <div class="check-btn-wrap"><button class="check-btn" onclick="toggleDone('s9')"><span class="btn-icon">☐</span><span class="btn-label">打卡</span></button></div>
+      </div>
+    </div>
+    <div class="meal-banner">📸 推薦拍攝點</div>
+    <div class="stop-inner" style="padding-top:0">
+      <button class="photo-toggle" onclick="togglePhoto('p9')">📷 查看拍攝建議 ▾</button>
+      <div class="photo-toggle-content collapsed" id="p9">
+        <div class="photo-section">
+          <div class="photo-tip">① <strong>陸家嘴環形天橋</strong>：三棟超高層的正面構圖，廣角全收<br>② <strong>黃浦江濱江步道</strong>：背對外灘，以東方明珠為主體，兩側金融城陪襯<br>③ <strong>外灘對岸回望</strong>：從外灘望浦東，黃昏時三件套逆光剪影最具戲劇張力</div>
+          <div class="photo-map-btns">
+            <a class="photo-map-btn photo-map-btn-google" href="https://maps.google.com/?q=陸家嘴環形天橋+上海" target="_blank">🗺 陸家嘴天橋</a>
+            <a class="photo-map-btn photo-map-btn-amap" href="https://uri.amap.com/search?keyword=陆家嘴环形天桥&city=上海&src=myapp" target="_blank">📍 高德地圖</a>
+            <a class="photo-map-btn photo-map-btn-google" href="https://maps.google.com/?q=浦東濱江步道+上海" target="_blank">🗺 浦東濱江步道</a>
+          </div>
+          <img class="photo-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Shanghai_Oriental_Pearl_Tower_from_The_Bund.jpg/1280px-Shanghai_Oriental_Pearl_Tower_from_The_Bund.jpg" alt="東方明珠" onerror="this.style.display='none'">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"></div>
+
+  <!-- 朵雲書院 -->
+  <div class="stop-card" id="s10">
+    <div class="stop-inner">
+      <div class="stop-header">
+        <div class="stop-left">
+          <div class="stop-time">16:30 — 20:00</div>
+          <div class="stop-name">📚 朵雲書院旗艦店 · 等待夜景</div>
+          <div class="stop-desc">上海中心大廈 52 樓，買一杯飲品入座，俯瞰外灘全景。日落約 19:00，燈全亮約 19:30–20:00 最美。⚠️ 建議提前微信預約時段。</div>
+          <div class="tags"><span class="tag tag-rest">🌟 必去體驗</span><span class="tag tag-sight">景點</span></div>
+          <div class="map-btns">
+            <a class="map-btn map-btn-google" href="https://maps.google.com/?q=朵云书院旗舰店+上海中心大厦" target="_blank"><span class="map-icon">🗺</span>Google Map</a>
+            <a class="map-btn map-btn-amap" href="https://uri.amap.com/search?keyword=朵云书院旗舰店&city=上海&src=myapp" target="_blank"><span class="map-icon">📍</span>高德地圖</a>
+          </div>
+        </div>
+        <div class="check-btn-wrap"><button class="check-btn" onclick="toggleDone('s10')"><span class="btn-icon">☐</span><span class="btn-label">打卡</span></button></div>
+      </div>
+    </div>
+    <div class="meal-banner">📸 推薦拍攝點</div>
+    <div class="stop-inner" style="padding-top:0">
+      <button class="photo-toggle" onclick="togglePhoto('p10')">📷 查看拍攝建議 ▾</button>
+      <div class="photo-toggle-content collapsed" id="p10">
+        <div class="photo-section">
+          <div class="photo-tip">① <strong>落地窗前拍外灘</strong>：找靠外灘方向的座位，日落後玻璃反射燈光成天然濾鏡<br>② <strong>書架 + 夜景雙重景</strong>：把書架和窗外夜景同框，獨特的「最高書店」構圖<br>③ <strong>最佳時機</strong>：19:00–19:30 藍調天空，外灘建築燈全亮，是手機也能拍出大片的黃金時段</div>
+          <div class="photo-map-btns">
+            <a class="photo-map-btn photo-map-btn-google" href="https://maps.google.com/?q=朵云书院旗舰店+上海中心大厦" target="_blank">🗺 朵雲書院 52F</a>
+            <a class="photo-map-btn photo-map-btn-amap" href="https://uri.amap.com/search?keyword=朵云书院旗舰店&city=上海&src=myapp" target="_blank">📍 高德地圖</a>
+          </div>
+          <img class="photo-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Shanghai_Tower_Shanghai_China.jpg/800px-Shanghai_Tower_Shanghai_China.jpg" alt="上海中心大廈" onerror="this.style.display='none'">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"></div>
+
+  <!-- 新天地晚餐 -->
+  <div class="stop-card" id="s11">
+    <div class="stop-inner">
+      <div class="stop-header">
+        <div class="stop-left">
+          <div class="stop-time">20:30</div>
+          <div class="stop-name">🍽 新天地 · 晚餐</div>
+          <div class="stop-desc">從朵雲書院搭地鐵約 25 分鐘返回，新天地距瑞金洲際步行約 5 分鐘！石庫門精品街區餐廳選擇豐富，吃完直接走路回飯店，輕鬆完美收工。🎉</div>
+          <div class="tags"><span class="tag tag-food">晚餐</span><span class="tag tag-shop">新天地</span></div>
+          <div class="map-btns">
+            <a class="map-btn map-btn-google" href="https://maps.google.com/?q=新天地+上海" target="_blank"><span class="map-icon">🗺</span>Google Map</a>
+            <a class="map-btn map-btn-amap" href="https://uri.amap.com/search?keyword=新天地&city=上海&src=myapp" target="_blank"><span class="map-icon">📍</span>高德地圖</a>
+          </div>
+        </div>
+        <div class="check-btn-wrap"><button class="check-btn" onclick="toggleDone('s11')"><span class="btn-icon">☐</span><span class="btn-label">打卡</span></button></div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- ===== DAY 4 ===== -->
+<div class="day-section" id="day-3">
+  <div class="day-hero">
+    <div class="day-num">04</div>
+    <div class="day-info">
+      <div class="day-label">Day 4</div>
+      <div class="day-theme">久光百貨 · 靜安寺 · 人和館午餐 · 返程</div>
+      <div class="day-date">5月31日（六）</div>
+    </div>
+  </div>
+
+  <div class="stops-grid">
+  <!-- 久光百貨 -->
+  <div class="stop-card" id="s12">
+    <div class="stop-inner">
+      <div class="stop-header">
+        <div class="stop-left">
+          <div class="stop-time">09:00</div>
+          <div class="stop-name">🛍 久光百貨（靜安寺）</div>
+          <div class="stop-desc">從瑞金洲際搭地鐵約 10 分鐘即達（嘉善路→靜安寺站）。日系百貨 B2 超市必逛，日本進口食品、保養品，最後一波伴手禮血拼。</div>
+          <div class="tags"><span class="tag tag-shop">購物</span></div>
+          <div class="map-btns">
+            <a class="map-btn map-btn-google" href="https://maps.google.com/?q=久光百货+上海静安寺" target="_blank"><span class="map-icon">🗺</span>Google Map</a>
+            <a class="map-btn map-btn-amap" href="https://uri.amap.com/search?keyword=久光百货&city=上海&src=myapp" target="_blank"><span class="map-icon">📍</span>高德地圖</a>
+          </div>
+        </div>
+        <div class="check-btn-wrap"><button class="check-btn" onclick="toggleDone('s12')"><span class="btn-icon">☐</span><span class="btn-label">打卡</span></button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"></div>
+
+  <!-- 靜安寺 -->
+  <div class="stop-card" id="s13">
+    <div class="stop-inner">
+      <div class="stop-header">
+        <div class="stop-left">
+          <div class="stop-time">11:00</div>
+          <div class="stop-name">⛩ 靜安寺</div>
+          <div class="stop-desc">百貨隔壁金碧輝煌古剎，鬧市中的反差感，快速參觀拍照。</div>
+          <div class="tags"><span class="tag tag-sight">景點</span></div>
+          <div class="map-btns">
+            <a class="map-btn map-btn-google" href="https://maps.google.com/?q=靜安寺+上海" target="_blank"><span class="map-icon">🗺</span>Google Map</a>
+            <a class="map-btn map-btn-amap" href="https://uri.amap.com/search?keyword=静安寺&city=上海&src=myapp" target="_blank"><span class="map-icon">📍</span>高德地圖</a>
+          </div>
+        </div>
+        <div class="check-btn-wrap"><button class="check-btn" onclick="toggleDone('s13')"><span class="btn-icon">☐</span><span class="btn-label">打卡</span></button></div>
+      </div>
+    </div>
+    <div class="meal-banner">📸 推薦拍攝點</div>
+    <div class="stop-inner" style="padding-top:0">
+      <button class="photo-toggle" onclick="togglePhoto('p13')">📷 查看拍攝建議 ▾</button>
+      <div class="photo-toggle-content collapsed" id="p13">
+        <div class="photo-section">
+          <div class="photo-tip">① <strong>靜安寺正門</strong>：金色牌坊配背後現代玻璃大樓，古今對比強烈，是上海獨特的反差感構圖<br>② <strong>廟內香爐前</strong>：裊裊香煙配金色建築，早上光線柔和最適合拍攝</div>
+          <div class="photo-map-btns">
+            <a class="photo-map-btn photo-map-btn-google" href="https://maps.google.com/?q=靜安寺+上海" target="_blank">🗺 靜安寺正門</a>
+            <a class="photo-map-btn photo-map-btn-amap" href="https://uri.amap.com/search?keyword=静安寺&city=上海&src=myapp" target="_blank">📍 高德地圖</a>
+          </div>
+          <img class="photo-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Jing%27an_Temple_Shanghai.jpg/1280px-Jing%27an_Temple_Shanghai.jpg" alt="靜安寺" onerror="this.style.display='none'">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"></div>
+
+  <!-- 人和館 -->
+  <div class="stop-card" id="s14">
+    <div class="stop-inner">
+      <div class="stop-header">
+        <div class="stop-left">
+          <div class="stop-time">12:00</div>
+          <div class="stop-name">🍽 人和館 · 午餐</div>
+          <div class="stop-desc">趙家浜路，米其林推薦本幫菜，招牌蟹粉飯、醉蝦、紅燒肉。從瑞金洲際步行約 10 分鐘可達，地理位置絕佳！⚠️ 務必提前訂位。</div>
+          <div class="tags"><span class="tag tag-rest">🌟 指定餐廳</span><span class="tag tag-food">午餐</span></div>
+          <div class="map-btns">
+            <a class="map-btn map-btn-google" href="https://maps.google.com/?q=人和馆+上海+赵家浜路" target="_blank"><span class="map-icon">🗺</span>Google Map</a>
+            <a class="map-btn map-btn-amap" href="https://uri.amap.com/search?keyword=人和馆&city=上海&src=myapp" target="_blank"><span class="map-icon">📍</span>高德地圖</a>
+          </div>
+        </div>
+        <div class="check-btn-wrap"><button class="check-btn" onclick="toggleDone('s14')"><span class="btn-icon">☐</span><span class="btn-label">打卡</span></button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"></div>
+
+  <!-- 取行李 -->
+  <div class="stop-card" id="s15">
+    <div class="stop-inner">
+      <div class="stop-header">
+        <div class="stop-left">
+          <div class="stop-time">16:30</div>
+          <div class="stop-name">🧳 瑞金洲際酒店 · 取回行李</div>
+          <div class="stop-desc">行李早已寄放在一樓，回來取包、上個廁所即可出發，不需要整理，輕鬆上路！</div>
+          <div class="tags"><span class="tag tag-hotel">住宿</span></div>
+          <div class="map-btns">
+            <a class="map-btn map-btn-google" href="https://maps.google.com/?q=InterContinental+Shanghai+Ruijin" target="_blank"><span class="map-icon">🗺</span>Google Map</a>
+            <a class="map-btn map-btn-amap" href="https://uri.amap.com/search?keyword=上海瑞金洲际酒店&city=上海&src=myapp" target="_blank"><span class="map-icon">📍</span>高德地圖</a>
+          </div>
+        </div>
+        <div class="check-btn-wrap"><button class="check-btn" onclick="toggleDone('s15')"><span class="btn-icon">☐</span><span class="btn-label">打卡</span></button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"></div>
+
+  <!-- 機場 -->
+  <div class="stop-card" id="s16">
+    <div class="stop-inner">
+      <div class="stop-header">
+        <div class="stop-left">
+          <div class="stop-time">17:00 出發 → 20:05 起飛</div>
+          <div class="stop-name">✈ 浦東機場 T2 · 返程</div>
+          <div class="stop-desc">從瑞金洲際搭滴滴約 55 分鐘前往浦東機場。17:00 出發，17:55 前抵達機場，起飛前超過兩小時完成報到，從容不迫。一路順風！</div>
+          <div class="tags"><span class="tag tag-transit">交通</span></div>
+          <div class="map-btns">
+            <a class="map-btn map-btn-google" href="https://maps.google.com/?q=上海浦東國際機場T2" target="_blank"><span class="map-icon">🗺</span>Google Map</a>
+            <a class="map-btn map-btn-amap" href="https://uri.amap.com/search?keyword=浦东国际机场T2&city=上海&src=myapp" target="_blank"><span class="map-icon">📍</span>高德地圖</a>
+          </div>
+        </div>
+        <div class="check-btn-wrap"><button class="check-btn" onclick="toggleDone('s16')"><span class="btn-icon">☐</span><span class="btn-label">打卡</span></button></div>
+      </div>
+    </div>
+  </div>
+  </div><!-- end stops-grid -->
+</div>
+
+</div><!-- end content -->
+
+<button class="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+  // State
+  const ALL_IDS = ['s0','s1','s2','s3','s3b','s4','s4b','s5','s6','s7','s8','s9','s10','s11','s12','s13','s14','s15','s16'];
+  const TOTAL = ALL_IDS.length;
+  const doneKey = 'sh_done_v1';
+  let done = JSON.parse(localStorage.getItem(doneKey) || '{}');
+
+  function saveState() {
+    localStorage.setItem(doneKey, JSON.stringify(done));
+  }
+
+  function toggleDone(id) {
+    done[id] = !done[id];
+    saveState();
+    renderCard(id);
+    updateProgress();
+  }
+
+  function renderCard(id) {
+    const card = document.getElementById(id);
+    const btn = card.querySelector('.check-btn');
+    const icon = btn.querySelector('.btn-icon');
+    const label = btn.querySelector('.btn-label');
+    if (done[id]) {
+      card.classList.add('done');
+      if (icon) icon.textContent = '✓';
+      if (label) label.textContent = '完成';
+    } else {
+      card.classList.remove('done');
+      if (icon) icon.textContent = '☐';
+      if (label) label.textContent = '打卡';
+    }
+  }
+
+  function updateProgress() {
+    const count = Object.values(done).filter(Boolean).length;
+    const pct = Math.round(count / TOTAL * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressCount').textContent = count + ' / ' + TOTAL;
+  }
+
+  function init() {
+    ALL_IDS.forEach(id => renderCard(id));
+    updateProgress();
+  }
+
+  // Day switching
+  function switchDay(idx) {
+    document.querySelectorAll('.day-section').forEach((el, i) => {
+      el.classList.toggle('active', i === idx);
+    });
+    document.querySelectorAll('.day-tab').forEach((el, i) => {
+      el.classList.toggle('active', i === idx);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Photo toggle
+  function togglePhoto(id) {
+    const el = document.getElementById(id);
+    const btn = el.previousElementSibling;
+    const isOpen = el.classList.contains('expanded');
+    el.classList.toggle('collapsed', isOpen);
+    el.classList.toggle('expanded', !isOpen);
+    btn.innerHTML = isOpen ? '📷 查看拍攝建議 ▾' : '📷 收起拍攝建議 ▴';
+  }
+
+  init();
+</script>
+</body>
+</html>
